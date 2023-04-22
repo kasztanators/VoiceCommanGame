@@ -6,7 +6,7 @@ from settings import *
 
 
 class Player:
-    def __init__(self, pos_x=0, pos_y=0,color =(255, 0, 0)):
+    def __init__(self, pos_x=0, pos_y=0, color=(255, 0, 0)):
 
         self.direction = pygame.math.Vector2(0, 0)
         self.speed = 8
@@ -19,13 +19,25 @@ class Player:
         self.jump = False
         self.running = False
         self.rect = pygame.Rect((pos_x, pos_y, 80, 180))
+        self.is_squatting = False
 
     @abstractmethod
     def move(self):
         pass
+
     def draw_player(self, screen):
         pygame.draw.rect(screen, self.color, self.rect)
 
     def refresh(self, screen):
+        self.squat()
         self.move()
         self.draw_player(screen)
+
+    def squat(self):
+        key = pygame.key.get_pressed()
+        if key[pygame.K_c] and not self.is_squatting:
+            self.is_squatting = True
+            self.rect = pygame.Rect((self.rect.x, self.rect.y + 90, 80, 90))
+        elif not key[pygame.K_c] and self.is_squatting:
+            self.is_squatting = False
+            self.rect = pygame.Rect((self.rect.x, self.rect.y - 90, 80, 180))
