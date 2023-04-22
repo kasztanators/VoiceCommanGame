@@ -2,16 +2,16 @@ import pygame
 from settings import *
 import sys
 from map import Map
-from player import Player
-
+from wizard import Wizard
+from warrior import Warrior
 
 class Game:
     def __init__(self):
         self.clock = pygame.time.Clock()
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
         self.map = Map()
-        self.player = Player()
-
+        self.wizard = Wizard()
+        self.warrior = Warrior()
     def run(self):
         pygame.init()
         while True:
@@ -28,4 +28,5 @@ class Game:
     def refresh(self):
         self.map.refresh(self.screen)
 
-        self.player.refresh(self.screen)
+        self.warrior.refresh(self.screen)
+        self.wizard.refresh(self.screen)
