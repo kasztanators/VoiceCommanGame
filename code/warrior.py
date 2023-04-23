@@ -1,9 +1,10 @@
 from player import *
-
+from wizard import *
 
 class Warrior(Player):
     def __init__(self, pos_x=100, pos_y=200, color=(255, 255, 0)):
         super().__init__(pos_x, pos_y, color)
+
 
     def move(self):
         SPEED = 10
@@ -12,14 +13,14 @@ class Warrior(Player):
         dy = 0
         self.running = False
         key = pygame.key.get_pressed()
-        if key[pygame.K_LEFT]:
+        if key[pygame.K_LEFT] and self.check_enemy_position():
             dx = -SPEED
             self.running = True
         if key[pygame.K_RIGHT]:
             dx = SPEED
             self.running = True
         # jumping
-        if key[pygame.K_SPACE] and not self.jump:
+        if key[pygame.K_SPACE] and not self.jump and self.check_enemy_position():
             self.vel_y = -30
             self.jump = True
 
@@ -38,3 +39,4 @@ class Warrior(Player):
 
         self.rect.x += dx
         self.rect.y += dy
+

@@ -20,7 +20,7 @@ class Player:
         self.running = False
         self.rect = pygame.Rect((pos_x, pos_y, 80, 180))
         self.is_squatting = False
-
+        self.enemy = None
     @abstractmethod
     def move(self):
         pass
@@ -41,3 +41,29 @@ class Player:
         elif not key[pygame.K_c] and self.is_squatting:
             self.is_squatting = False
             self.rect = pygame.Rect((self.rect.x, self.rect.y - 90, 80, 180))
+
+    def add_enemy(self, enemy):
+        self.enemy = enemy
+
+    def check_enemy_position(self):
+        player_rect = self.enemy.rect
+        enemy_rect = self.rect
+
+        if player_rect.colliderect(enemy_rect):
+            # Collision detected, player cannot move
+            return False
+        else:
+            # No collision detected, player can move
+            return True
+
+    def load_images(self, sprite_sheet, animation_steps):
+        # extract images from spritesheet
+        animation_list = []
+        for y, animation in enumerate(animation_steps):
+            temp_img_list = []
+            for x in range(animation):
+                temp_img = sprite_sheet.subsurface(x * self.size, y * self.size, self.size, self.size)
+                temp_img_list.append(
+                    pygame.transform.scale(temp_img, (self.size * self.image_scale, self.size * self.image_scale)))
+            animation_list.append(temp_img_list)
+        return animation_list

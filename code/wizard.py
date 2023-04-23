@@ -12,14 +12,14 @@ class Wizard(Player):
         dy = 0
         self.running = False
         key = pygame.key.get_pressed()
-        if key[pygame.K_LEFT]:
+        if key[pygame.K_a]:
             dx = -SPEED
             self.running = True
-        if key[pygame.K_RIGHT]:
+        if key[pygame.K_d] and self.check_enemy_position():
             dx = SPEED
             self.running = True
         # jumping
-        if key[pygame.K_SPACE] and not self.jump:
+        if key[pygame.K_w] and not self.jump and self.check_enemy_position():
             self.vel_y = -30
             self.jump = True
 
@@ -38,3 +38,4 @@ class Wizard(Player):
 
         self.rect.x += dx
         self.rect.y += dy
+
