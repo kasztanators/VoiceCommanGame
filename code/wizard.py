@@ -2,8 +2,8 @@ from player import *
 
 
 class Wizard(Player):
-    def __init__(self, pos_x=0, pos_y=0, color=(255, 0, 0)):
-        super().__init__(pos_x, pos_y, color)
+    def __init__(self, pos_x=100, pos_y=0, color=(255, 0, 0)):
+        super().__init__(pos_x, pos_y, color, 100)
 
     def move(self):
         SPEED = 10
@@ -15,15 +15,15 @@ class Wizard(Player):
         if key[pygame.K_a]:
             dx = -SPEED
             self.running = True
-        if key[pygame.K_d] and self.check_enemy_position():
+        if key[pygame.K_d] and self.rect.x + self.rect.width < SCREEN_WIDTH/2-100:
             dx = SPEED
             self.running = True
         # jumping
-        if key[pygame.K_w] and not self.jump and self.check_enemy_position():
+        if key[pygame.K_w] and not self.jump:
             self.vel_y = -30
             self.jump = True
         if key[pygame.K_p]:
-            self.shoot()
+            self.shoot(10)
         self.vel_y += GRAVITY
         dy += self.vel_y
 
