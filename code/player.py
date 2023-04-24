@@ -1,12 +1,12 @@
 from abc import abstractmethod
-
+from healthbar import HealthBar
 import pygame
 
 from settings import *
 from bullet import *
 
 class Player:
-    def __init__(self, pos_x=0, pos_y=0, color=(255, 0, 0)):
+    def __init__(self, pos_x=0, pos_y=0, color=(255, 0, 0),health_bar_x = 100):
 
         self.direction = pygame.math.Vector2(0, 0)
         self.speed = 8
@@ -23,6 +23,8 @@ class Player:
         self.enemy = None
         self.bullets = []
         self.cooldown = 0
+        self.health_pts = 100
+        self.health_bar = HealthBar(health_bar_x, 50, 300, 30, self.health_pts)
     @abstractmethod
     def move(self):
         pass
@@ -31,6 +33,9 @@ class Player:
         pygame.draw.rect(screen, self.color, self.rect)
 
     def refresh(self, screen):
+        self.hit_by_bullet()
+        self.health_bar.update(self.health_pts)
+        self.health_bar.draw(screen)
         self.decrease_cooldown()
         self.squat()
         self.move()
@@ -62,14 +67,18 @@ class Player:
             # No collision detected, player can move
             return True
 
-
-
-    def shoot(self):
+    def shoot(self, bullet_speed):
         if self.cooldown <=0:
-            bullet = Bullet(self.rect.x, self.rect.y,self.bullets)
+            bullet = Bullet(self.rect.x, self.rect.y,self.bullets,bullet_speed)
             self.bullets.append(bullet)
             self.cooldown+=10
 
     def decrease_cooldown(self):
         if self.cooldown >0:
             self.cooldown-=0.5
+
+    def hit_by_bullet(self):
+        for bullet in self.enemy.bullets:
+            if self.rect.colliderect(bullet.rect):
+                self.health_pts -=10
+                self.enemy.bullets.remove(bullet)

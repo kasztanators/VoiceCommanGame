@@ -3,10 +3,10 @@ from settings import SCREEN_WIDTH
 
 
 class Bullet:
-    def __init__(self, x, y, bullet_list):
+    def __init__(self, x, y, bullet_list, bullet_speed):
         self.x = x
         self.y = y
-        self.speed = 10
+        self.speed = bullet_speed
         self.color = (255, 0,0)
         self.rect = pygame.Rect(self.x, self.y, 10, 10)
         self.bullet_list = bullet_list
@@ -22,9 +22,7 @@ class Bullet:
     def move(self):
         self.x += self.speed
         self.rect.x = self.x
-        if self.x > SCREEN_WIDTH:
-            self.x = 0
-            self.rect.x = self.x
+
 
     def delete_bullet(self):
         if self.rect.x < 0 or self.rect.x > SCREEN_WIDTH-50:
