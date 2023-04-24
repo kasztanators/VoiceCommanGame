@@ -3,7 +3,7 @@ from abc import abstractmethod
 import pygame
 
 from settings import *
-
+from bullet import *
 
 class Player:
     def __init__(self, pos_x=0, pos_y=0, color=(255, 0, 0)):
@@ -21,6 +21,8 @@ class Player:
         self.rect = pygame.Rect((pos_x, pos_y, 80, 180))
         self.is_squatting = False
         self.enemy = None
+        self.bullets = []
+        self.cooldown = 0
     @abstractmethod
     def move(self):
         pass
@@ -29,9 +31,13 @@ class Player:
         pygame.draw.rect(screen, self.color, self.rect)
 
     def refresh(self, screen):
+        self.decrease_cooldown()
         self.squat()
         self.move()
+        for bullet in self.bullets:
+            bullet.refresh(screen)
         self.draw_player(screen)
+
 
     def squat(self):
         key = pygame.key.get_pressed()
@@ -56,14 +62,14 @@ class Player:
             # No collision detected, player can move
             return True
 
-    def load_images(self, sprite_sheet, animation_steps):
-        # extract images from spritesheet
-        animation_list = []
-        for y, animation in enumerate(animation_steps):
-            temp_img_list = []
-            for x in range(animation):
-                temp_img = sprite_sheet.subsurface(x * self.size, y * self.size, self.size, self.size)
-                temp_img_list.append(
-                    pygame.transform.scale(temp_img, (self.size * self.image_scale, self.size * self.image_scale)))
-            animation_list.append(temp_img_list)
-        return animation_list
+
+
+    def shoot(self):
+        if self.cooldown <=0:
+            bullet = Bullet(self.rect.x, self.rect.y,self.bullets)
+            self.bullets.append(bullet)
+            self.cooldown+=10
+
+    def decrease_cooldown(self):
+        if self.cooldown >0:
+            self.cooldown-=0.5

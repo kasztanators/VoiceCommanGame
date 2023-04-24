@@ -22,7 +22,8 @@ class Wizard(Player):
         if key[pygame.K_w] and not self.jump and self.check_enemy_position():
             self.vel_y = -30
             self.jump = True
-
+        if key[pygame.K_p]:
+            self.shoot()
         self.vel_y += GRAVITY
         dy += self.vel_y
 
@@ -38,4 +39,3 @@ class Wizard(Player):
 
         self.rect.x += dx
         self.rect.y += dy
-
