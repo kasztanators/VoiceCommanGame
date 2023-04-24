@@ -14,6 +14,10 @@ class Game:
         self.warrior = Warrior()
         self.wizard.add_enemy(self.warrior)
         self.warrior.add_enemy(self.wizard)
+
+
+
+
     def run(self):
         pygame.init()
         while True:
