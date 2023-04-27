@@ -4,9 +4,8 @@ from wizard import *
 class Warrior(Player):
     def __init__(self, pos_x=SCREEN_WIDTH-180, pos_y=200, color=(255, 255, 0)):
         super().__init__(pos_x, pos_y, color, 600)
-
-
-    def move(self):
+        self.speech_active = False
+    def move(self, command):
         SPEED = 10
         GRAVITY = 2
         dx = 0

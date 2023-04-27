@@ -25,9 +25,6 @@ class Player:
         self.cooldown = 0
         self.health_pts = 100
         self.health_bar = HealthBar(health_bar_x, 50, 300, 30, self.health_pts)
-    @abstractmethod
-    def move(self):
-        pass
 
     def draw_player(self, screen):
         pygame.draw.rect(screen, self.color, self.rect)
@@ -38,7 +35,6 @@ class Player:
         self.health_bar.draw(screen)
         self.decrease_cooldown()
         self.squat()
-        self.move()
         for bullet in self.bullets:
             bullet.refresh(screen)
         self.draw_player(screen)
