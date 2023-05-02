@@ -25,9 +25,7 @@ class Player:
         self.cooldown = 0
         self.health_pts = 100
         self.health_bar = HealthBar(health_bar_x, 50, 300, 30, self.health_pts)
-    @abstractmethod
-    def move(self):
-        pass
+        self.squat_key = None
 
     def draw_player(self, screen):
         pygame.draw.rect(screen, self.color, self.rect)
@@ -38,18 +36,16 @@ class Player:
         self.health_bar.draw(screen)
         self.decrease_cooldown()
         self.squat()
-        self.move()
         for bullet in self.bullets:
             bullet.refresh(screen)
         self.draw_player(screen)
 
-
     def squat(self):
         key = pygame.key.get_pressed()
-        if key[pygame.K_c] and not self.is_squatting:
+        if key[self.squat_key] and not self.is_squatting:
             self.is_squatting = True
             self.rect = pygame.Rect((self.rect.x, self.rect.y + 90, 80, 90))
-        elif not key[pygame.K_c] and self.is_squatting:
+        elif not key[self.squat_key] and self.is_squatting:
             self.is_squatting = False
             self.rect = pygame.Rect((self.rect.x, self.rect.y - 90, 80, 180))
 
