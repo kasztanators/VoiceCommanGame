@@ -4,6 +4,7 @@ from player import *
 class Wizard(Player):
     def __init__(self, pos_x=100, pos_y=0, color=(255, 0, 0)):
         super().__init__(pos_x, pos_y, color, 100)
+        self.squat_key = pygame.K_s
 
     def move(self):
         SPEED = 10

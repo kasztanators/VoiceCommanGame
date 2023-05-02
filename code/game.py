@@ -16,18 +16,30 @@ class Game:
         self.wizard = Wizard()
         self.warrior = Warrior()
         self.wizard.add_enemy(self.warrior)
-        self.warrior.add_enemy(self.wizard)
+        self.warrior.add_enemy(self.wizard)# warrior speaks
         self.commands = ['down','go', 'left', 'no','right', 'stop', 'up', 'yes']
         self.loaded_model = tf.keras.models.load_model("C:/Users/User/PycharmProjects/VoiceCommandGame/code/saved_model/saved")
+        self.push_to_talk = False
+        self.push_to_talk_release = False
+        self.found_command = False
 
     def run(self):
         pygame.init()
 
         while True:
-            if self.warrior.speech_active:
+            key = pygame.key.get_pressed()
+            predicted_command = ""
+            command = ""
+            if key[pygame.K_SPACE]:
+                predicted_command = self.predict_mic()
+                self.found_command = True
 
-                command = self.predict_mic()
-                self.warrior.move(command)
+            if self.found_command:
+                command = predicted_command
+                self.found_command = False
+                print(command)
+
+            self.warrior.move(command)
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
