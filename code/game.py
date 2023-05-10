@@ -22,6 +22,7 @@ class Game:
         self.push_to_talk = False
         self.push_to_talk_release = False
         self.found_command = False
+        self.ptt_img = pygame.image.load("./assets/images/others/speech.png").convert_alpha()
 
     def run(self):
         pygame.init()
@@ -30,7 +31,11 @@ class Game:
             key = pygame.key.get_pressed()
             predicted_command = ""
             command = ""
+
             if key[pygame.K_SPACE]:
+
+                self.draw_ptt()
+                pygame.display.update()
                 predicted_command = self.predict_mic()
                 self.found_command = True
 
@@ -51,7 +56,6 @@ class Game:
 
     def refresh(self):
         self.map.refresh(self.screen)
-
         self.wizard.move()
         self.warrior.refresh(self.screen)
         self.wizard.refresh(self.screen)
@@ -63,3 +67,5 @@ class Game:
         label_prediction = np.argmax(prediction, axis=1)
         command = self.commands[label_prediction[0]]
         return command
+    def draw_ptt(self):
+        self.screen.blit(self.ptt_img, (SCREEN_WIDTH-103, 23))
