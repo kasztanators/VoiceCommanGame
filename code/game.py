@@ -17,7 +17,7 @@ class Game:
         self.warrior = Warrior()
         self.wizard.add_enemy(self.warrior)
         self.warrior.add_enemy(self.wizard)# warrior speaks
-        self.commands = ['down','go', 'left', 'no','right', 'stop', 'up', 'yes']
+        self.commands = ['down','go', 'left','right', 'stop', 'up', 'yes']
         self.loaded_model = tf.keras.models.load_model("C:/Users/User/PycharmProjects/VoiceCommandGame/code/saved_model/saved")
         self.push_to_talk = False
         self.push_to_talk_release = False
