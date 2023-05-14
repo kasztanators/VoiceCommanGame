@@ -6,8 +6,8 @@ from map import Map
 from wizard import Wizard
 from warrior import Warrior
 import tensorflow as tf
-from SpeechRecognition.code.recording_functions import record_audio
-from SpeechRecognition.code.tensor_functions import preprocess_audiobuffer
+from SpeechRecognition.helper_func.recording_functions import record_audio
+from SpeechRecognition.helper_func.tensor_functions import preprocess_audiobuffer
 class Game:
     def __init__(self):
         self.clock = pygame.time.Clock()
@@ -45,6 +45,7 @@ class Game:
                 print(command)
 
             self.warrior.move(command)
+
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
