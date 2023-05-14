@@ -1,12 +1,8 @@
-import os
 import pathlib
-
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
 import tensorflow as tf
-
-
 from IPython import display
 
 # Set the seed value for experiment reproducibility.
@@ -16,12 +12,15 @@ np.random.seed(seed)
 DATASET_PATH = 'data/mini_speech_commands'
 
 data_dir = pathlib.Path(DATASET_PATH)
-if not data_dir.exists():
-  tf.keras.utils.get_file(
-      'mini_speech_commands.zip',
-      origin="http://storage.googleapis.com/download.tensorflow.org/data/mini_speech_commands.zip",
-      extract=True,
-      cache_dir='.', cache_subdir='data')
+####################################
+# UNCOMMENT TO DOWNLOAD DATASET AND DELETE 'no' directory
+####################################
+# if not data_dir.exists():
+#   tf.keras.utils.get_file(
+#       'mini_speech_commands.zip',
+#       origin="http://storage.googleapis.com/download.tensorflow.org/data/mini_speech_commands.zip",
+#       extract=True,
+#       cache_dir='.', cache_subdir='data')
 
 commands = np.array(tf.io.gfile.listdir(str(data_dir)))
 commands = commands[(commands != 'README.md') & (commands != '.DS_Store')]
@@ -41,9 +40,11 @@ print("label names:", label_names)
 
 train_ds.element_spec
 
+
 def squeeze(audio, labels):
-  audio = tf.squeeze(audio, axis=-1)
-  return audio, labels
+    audio = tf.squeeze(audio, axis=-1)
+    return audio, labels
+
 
 train_ds = train_ds.map(squeeze, tf.data.AUTOTUNE)
 val_ds = val_ds.map(squeeze, tf.data.AUTOTUNE)
@@ -52,70 +53,69 @@ test_ds = val_ds.shard(num_shards=2, index=0)
 val_ds = val_ds.shard(num_shards=2, index=1)
 
 for example_audio, example_labels in train_ds.take(1):
-  print(example_audio.shape)
-  print(example_labels.shape)
+    print(example_audio.shape)
+    print(example_labels.shape)
 
-label_names[[1,1,3,0]]
-
+label_names[[1, 1, 3, 0]]
 
 rows = 3
 cols = 3
 n = rows * cols
 fig, axes = plt.subplots(rows, cols, figsize=(16, 9))
 
-
 for i in range(n):
-  if i>=n:
-    break
-  r = i // cols
-  c = i % cols
-  ax = axes[r][c]
-  ax.plot(example_audio[i].numpy())
-  ax.set_yticks(np.arange(-1.2, 1.2, 0.2))
-  label = label_names[example_labels[i]]
-  ax.set_title(label)
-  ax.set_ylim([-1.1,1.1])
+    if i >= n:
+        break
+    r = i // cols
+    c = i % cols
+    ax = axes[r][c]
+    ax.plot(example_audio[i].numpy())
+    ax.set_yticks(np.arange(-1.2, 1.2, 0.2))
+    label = label_names[example_labels[i]]
+    ax.set_title(label)
+    ax.set_ylim([-1.1, 1.1])
 
 plt.show()
 
 
 def get_spectrogram(waveform):
-  # Convert the waveform to a spectrogram via a STFT.
-  spectrogram = tf.signal.stft(
-      waveform, frame_length=255, frame_step=128)
-  # Obtain the magnitude of the STFT.
-  spectrogram = tf.abs(spectrogram)
-  # Add a `channels` dimension, so that the spectrogram can be used
-  # as image-like input data with convolution layers (which expect
-  # shape (`batch_size`, `height`, `width`, `channels`).
-  spectrogram = spectrogram[..., tf.newaxis]
-  return spectrogram
+    # Convert the waveform to a spectrogram via a STFT.
+    spectrogram = tf.signal.stft(
+        waveform, frame_length=255, frame_step=128)
+    # Obtain the magnitude of the STFT.
+    spectrogram = tf.abs(spectrogram)
+    # Add a `channels` dimension, so that the spectrogram can be used
+    # as image-like input data with convolution layers (which expect
+    # shape (`batch_size`, `height`, `width`, `channels`).
+    spectrogram = spectrogram[..., tf.newaxis]
+    return spectrogram
+
 
 for i in range(3):
-  label = label_names[example_labels[i]]
-  waveform = example_audio[i]
-  spectrogram = get_spectrogram(waveform)
+    label = label_names[example_labels[i]]
+    waveform = example_audio[i]
+    spectrogram = get_spectrogram(waveform)
 
-  print('Label:', label)
-  print('Waveform shape:', waveform.shape)
-  print('Spectrogram shape:', spectrogram.shape)
-  print('Audio playback')
-  display.display(display.Audio(waveform, rate=16000))
+    print('Label:', label)
+    print('Waveform shape:', waveform.shape)
+    print('Spectrogram shape:', spectrogram.shape)
+    print('Audio playback')
+    display.display(display.Audio(waveform, rate=16000))
+
 
 def plot_spectrogram(spectrogram, ax):
-  if len(spectrogram.shape) > 2:
-    assert len(spectrogram.shape) == 3
-    spectrogram = np.squeeze(spectrogram, axis=-1)
-  # Convert the frequencies to log scale and transpose, so that the time is
-  # represented on the x-axis (columns).
-  # Add an epsilon to avoid taking a log of zero.
-  log_spec = np.log(spectrogram.T + np.finfo(float).eps)
-  height = log_spec.shape[0]
-  width = log_spec.shape[1]
-  X = np.linspace(0, np.size(spectrogram), num=width, dtype=int)
-  Y = range(height)
-  ax.pcolormesh(X, Y, log_spec)
-
+    if len(spectrogram.shape) > 2:
+        assert len(spectrogram.shape) == 3
+        spectrogram = np.squeeze(spectrogram, axis=-1)
+    # Convert the frequencies to log scale and transpose, so that the time is
+    # represented on the x-axis (columns).
+    # Add an epsilon to avoid taking a log of zero.
+    log_spec = np.log(spectrogram.T + np.finfo(float).eps)
+    height = log_spec.shape[0]
+    width = log_spec.shape[1]
+    X = np.linspace(0, np.size(spectrogram), num=width, dtype=int)
+    Y = range(height)
+    ax.pcolormesh(X, Y, log_spec)
 
 
 fig, axes = plt.subplots(2, figsize=(12, 8))
@@ -131,22 +131,21 @@ plt.show()
 
 
 def make_spec_ds(ds):
-  return ds.map(
-      map_func=lambda audio,label: (get_spectrogram(audio), label),
-      num_parallel_calls=tf.data.AUTOTUNE)
+    return ds.map(
+        map_func=lambda audio, label: (get_spectrogram(audio), label),
+        num_parallel_calls=tf.data.AUTOTUNE)
 
 
 train_spectrogram_ds = make_spec_ds(train_ds)
 val_spectrogram_ds = make_spec_ds(val_ds)
 test_spectrogram_ds = make_spec_ds(test_ds)
 
-
 for example_spectrograms, example_spect_labels in train_spectrogram_ds.take(1):
-  break
+    break
 
 rows = 3
 cols = 3
-n = rows*cols
+n = rows * cols
 fig, axes = plt.subplots(rows, cols, figsize=(16, 9))
 
 for i in range(n):
@@ -158,11 +157,9 @@ for i in range(n):
 
 plt.show()
 
-
 train_spectrogram_ds = train_spectrogram_ds.cache().shuffle(10000).prefetch(tf.data.AUTOTUNE)
 val_spectrogram_ds = val_spectrogram_ds.cache().prefetch(tf.data.AUTOTUNE)
 test_spectrogram_ds = test_spectrogram_ds.cache().prefetch(tf.data.AUTOTUNE)
-
 
 input_shape = example_spectrograms.shape[1:]
 print('Input shape:', input_shape)
@@ -207,16 +204,16 @@ history = model.fit(
 )
 
 metrics = history.history
-plt.figure(figsize=(16,6))
-plt.subplot(1,2,1)
+plt.figure(figsize=(16, 6))
+plt.subplot(1, 2, 1)
 plt.plot(history.epoch, metrics['loss'], metrics['val_loss'])
 plt.legend(['loss', 'val_loss'])
 plt.ylim([0, max(plt.ylim())])
 plt.xlabel('Epoch')
 plt.ylabel('Loss [CrossEntropy]')
 
-plt.subplot(1,2,2)
-plt.plot(history.epoch, 100*np.array(metrics['accuracy']), 100*np.array(metrics['val_accuracy']))
+plt.subplot(1, 2, 2)
+plt.plot(history.epoch, 100 * np.array(metrics['accuracy']), 100 * np.array(metrics['val_accuracy']))
 plt.legend(['accuracy', 'val_accuracy'])
 plt.ylim([0, 100])
 plt.xlabel('Epoch')
@@ -226,7 +223,7 @@ model.evaluate(test_spectrogram_ds, return_dict=True)
 y_pred = model.predict(test_spectrogram_ds)
 y_pred = tf.argmax(y_pred, axis=1)
 
-y_true = tf.concat(list(test_spectrogram_ds.map(lambda s,lab: lab)), axis=0)
+y_true = tf.concat(list(test_spectrogram_ds.map(lambda s, lab: lab)), axis=0)
 
 confusion_mtx = tf.math.confusion_matrix(y_true, y_pred)
 plt.figure(figsize=(10, 8))
@@ -238,162 +235,68 @@ plt.xlabel('Prediction')
 plt.ylabel('Label')
 plt.show()
 
-x = data_dir/'yes/0ab3b47d_nohash_0.wav'
-x = tf.io.read_file(str(x))
-x, sample_rate = tf.audio.decode_wav(x, desired_channels=1, desired_samples=16000,)
-x = tf.squeeze(x, axis=-1)
-waveform = x
-x = get_spectrogram(x)
-x = x[tf.newaxis,...]
 
-prediction = model(x)
-x_labels = ['no', 'yes', 'down', 'go', 'left', 'up', 'right', 'stop']
-plt.bar(x_labels, tf.nn.softmax(prediction[0]))
-plt.title('Yes')
-plt.show()
+def plot_command(command_name, file_dest):
+    x = data_dir / file_dest
+    x = tf.io.read_file(str(x))
+    x, sample_rate = tf.audio.decode_wav(x, desired_channels=1, desired_samples=16000, )
+    x = tf.squeeze(x, axis=-1)
+    waveform = x
+    x = get_spectrogram(x)
+    x = x[tf.newaxis, ...]
 
-x = data_dir/'up/0ab3b47d_nohash_0.wav'
-x = tf.io.read_file(str(x))
-x, sample_rate = tf.audio.decode_wav(x, desired_channels=1, desired_samples=16000,)
-x = tf.squeeze(x, axis=-1)
-waveform = x
-x = get_spectrogram(x)
-x = x[tf.newaxis,...]
-
-prediction = model(x)
-x_labels = ['no', 'yes', 'down', 'go', 'left', 'up', 'right', 'stop']
-plt.bar(x_labels, tf.nn.softmax(prediction[0]))
-plt.title('Up')
-plt.show()
+    prediction = model(x)
+    x_labels = ['down','go', 'left','right', 'stop', 'up', 'yes']
+    plt.bar(x_labels, tf.nn.softmax(prediction[0]))
+    plt.title(command_name)
+    plt.show()
 
 
-x = data_dir/'stop/0b40aa8e_nohash_0.wav'
-x = tf.io.read_file(str(x))
-x, sample_rate = tf.audio.decode_wav(x, desired_channels=1, desired_samples=16000,)
-x = tf.squeeze(x, axis=-1)
-waveform = x
-x = get_spectrogram(x)
-x = x[tf.newaxis,...]
+plot_command('Yes','yes/0ab3b47d_nohash_0.wav')
+plot_command('Up','up/0ab3b47d_nohash_0.wav')
+plot_command('Stop','stop/0b40aa8e_nohash_0.wav')
+plot_command('Right','right/0ab3b47d_nohash_0.wav')
+plot_command('Left','left/0b09edd3_nohash_0.wav')
+plot_command('Go', 'go/0a9f9af7_nohash_0.wav')
+plot_command('Down', 'down/0a9f9af7_nohash_0.wav')
 
-prediction = model(x)
-x_labels = ['no', 'yes', 'down', 'go', 'left', 'up', 'right', 'stop']
-plt.bar(x_labels, tf.nn.softmax(prediction[0]))
-plt.title('Stop')
-plt.show()
-
-
-x = data_dir/'right/0ab3b47d_nohash_0.wav'
-x = tf.io.read_file(str(x))
-x, sample_rate = tf.audio.decode_wav(x, desired_channels=1, desired_samples=16000,)
-x = tf.squeeze(x, axis=-1)
-waveform = x
-x = get_spectrogram(x)
-x = x[tf.newaxis,...]
-
-prediction = model(x)
-x_labels = ['no', 'yes', 'down', 'go', 'left', 'up', 'right', 'stop']
-plt.bar(x_labels, tf.nn.softmax(prediction[0]))
-plt.title('Right')
-plt.show()
-
-
-x = data_dir/'no/01bb6a2a_nohash_0.wav'
-x = tf.io.read_file(str(x))
-x, sample_rate = tf.audio.decode_wav(x, desired_channels=1, desired_samples=16000,)
-x = tf.squeeze(x, axis=-1)
-waveform = x
-x = get_spectrogram(x)
-x = x[tf.newaxis,...]
-
-prediction = model(x)
-x_labels = ['no', 'yes', 'down', 'go', 'left', 'up', 'right', 'stop']
-plt.bar(x_labels, tf.nn.softmax(prediction[0]))
-plt.title('No')
-plt.show()
-
-
-
-x = data_dir/'left/0b09edd3_nohash_0.wav'
-x = tf.io.read_file(str(x))
-x, sample_rate = tf.audio.decode_wav(x, desired_channels=1, desired_samples=16000,)
-x = tf.squeeze(x, axis=-1)
-waveform = x
-x = get_spectrogram(x)
-x = x[tf.newaxis,...]
-
-prediction = model(x)
-x_labels = ['no', 'yes', 'down', 'go', 'left', 'up', 'right', 'stop']
-plt.bar(x_labels, tf.nn.softmax(prediction[0]))
-plt.title('Left')
-plt.show()
-
-
-
-x = data_dir/'go/0a9f9af7_nohash_0.wav'
-x = tf.io.read_file(str(x))
-x, sample_rate = tf.audio.decode_wav(x, desired_channels=1, desired_samples=16000,)
-x = tf.squeeze(x, axis=-1)
-waveform = x
-x = get_spectrogram(x)
-x = x[tf.newaxis,...]
-
-prediction = model(x)
-x_labels = ['no', 'yes', 'down', 'go', 'left', 'up', 'right', 'stop']
-plt.bar(x_labels, tf.nn.softmax(prediction[0]))
-plt.title('Go')
-plt.show()
-
-
-x = data_dir/'down/0a9f9af7_nohash_0.wav'
-x = tf.io.read_file(str(x))
-x, sample_rate = tf.audio.decode_wav(x, desired_channels=1, desired_samples=16000,)
-x = tf.squeeze(x, axis=-1)
-waveform = x
-x = get_spectrogram(x)
-x = x[tf.newaxis,...]
-
-prediction = model(x)
-x_labels = ['no', 'yes', 'down', 'go', 'left', 'up', 'right', 'stop']
-plt.bar(x_labels, tf.nn.softmax(prediction[0]))
-plt.title('Down')
-plt.show()
 
 
 display.display(display.Audio(waveform, rate=16000))
 
 
 class ExportModel(tf.Module):
-  def __init__(self, model):
-    self.model = model
+    def __init__(self, model):
+        self.model = model
 
-    # Accept either a string-filename or a batch of waveforms.
-    # YOu could add additional signatures for a single wave, or a ragged-batch.
-    self.__call__.get_concrete_function(
-        x=tf.TensorSpec(shape=(), dtype=tf.string))
-    self.__call__.get_concrete_function(
-       x=tf.TensorSpec(shape=[None, 16000], dtype=tf.float32))
+        # Accept either a string-filename or a batch of waveforms.
+        # YOu could add additional signatures for a single wave, or a ragged-batch.
+        self.__call__.get_concrete_function(
+            x=tf.TensorSpec(shape=(), dtype=tf.string))
+        self.__call__.get_concrete_function(
+            x=tf.TensorSpec(shape=[None, 16000], dtype=tf.float32))
 
+    @tf.function
+    def __call__(self, x):
+        # If they pass a string, load the file and decode it.
+        if x.dtype == tf.string:
+            x = tf.io.read_file(x)
+            x, _ = tf.audio.decode_wav(x, desired_channels=1, desired_samples=16000, )
+            x = tf.squeeze(x, axis=-1)
+            x = x[tf.newaxis, :]
 
-  @tf.function
-  def __call__(self, x):
-    # If they pass a string, load the file and decode it.
-    if x.dtype == tf.string:
-      x = tf.io.read_file(x)
-      x, _ = tf.audio.decode_wav(x, desired_channels=1, desired_samples=16000,)
-      x = tf.squeeze(x, axis=-1)
-      x = x[tf.newaxis, :]
+        x = get_spectrogram(x)
+        result = self.model(x, training=False)
 
-    x = get_spectrogram(x)
-    result = self.model(x, training=False)
+        class_ids = tf.argmax(result, axis=-1)
+        class_names = tf.gather(label_names, class_ids)
+        return {'predictions': result,
+                'class_ids': class_ids,
+                'class_names': class_names}
 
-    class_ids = tf.argmax(result, axis=-1)
-    class_names = tf.gather(label_names, class_ids)
-    return {'predictions':result,
-            'class_ids': class_ids,
-            'class_names': class_names}
 
 export = ExportModel(model)
-export(tf.constant(str(data_dir/'no/01bb6a2a_nohash_0.wav')))
+
 tf.keras.models.save_model(export.model, "../../code/saved_model/saved")
 imported = tf.keras.models.load_model("../../code/saved_model/saved")
-imported(waveform[tf.newaxis, :])
+#imported(waveform[tf.newaxis, :])
