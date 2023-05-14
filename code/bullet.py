@@ -23,7 +23,6 @@ class Bullet:
         self.x += self.speed
         self.rect.x = self.x
 
-
     def delete_bullet(self):
         if self.rect.x < 0 or self.rect.x > SCREEN_WIDTH-50:
             self.bullet_list.remove(self)

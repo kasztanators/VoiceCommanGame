@@ -25,7 +25,8 @@ class Warrior(Player):
             self.move_right = True
 
         if command == "stop":
-            self.move_right, self.move_left = False
+            self.move_right = False
+            self.move_left = False
         if command == "down" or command =="up":
             self.squat_voice(command)
         key = pygame.key.get_pressed()
@@ -56,6 +57,7 @@ class Warrior(Player):
 
         self.rect.x += dx
         self.rect.y += dy
+
     def squat_voice(self, command):
         key = pygame.key.get_pressed()
         if (command =="down") and not self.is_squatting_voice:

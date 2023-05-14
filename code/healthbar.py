@@ -49,5 +49,3 @@ class HealthBar:
 
     def draw(self, screen):
         screen.blit(self.surface, (self.x, self.y))
-
-
