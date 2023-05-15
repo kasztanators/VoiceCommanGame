@@ -3,16 +3,16 @@ from settings import SCREEN_WIDTH
 
 
 class Bullet:
-    def __init__(self, x, y, bullet_list, bullet_speed):
+    def __init__(self, x, y, bullet_list, bullet_speed, bullet_img):
         self.x = x
         self.y = y
         self.speed = bullet_speed
-        self.color = (255, 0,0)
+        self.bullet_img = pygame.image.load(f"./assets/images/bullet/{bullet_img}.png").convert_alpha()
         self.rect = pygame.Rect(self.x, self.y, 10, 10)
         self.bullet_list = bullet_list
 
     def draw_bullet(self, screen):
-        pygame.draw.rect(screen, self.color, self.rect)
+        screen.blit(self.bullet_img, self.rect)
 
     def refresh(self, screen):
         self.delete_bullet()

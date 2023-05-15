@@ -5,6 +5,7 @@ class Wizard(Player):
     def __init__(self, pos_x=100, pos_y=0, color=(255, 0, 0)):
         super().__init__(pos_x, pos_y, color, 100)
         self.squat_key = pygame.K_s
+        self.bullet_img = "axe"
 
     def move(self):
         SPEED = 10
@@ -23,7 +24,7 @@ class Wizard(Player):
         if key[pygame.K_w] and not self.jump:
             self.vel_y = -30
             self.jump = True
-        if key[pygame.K_p]:
+        if key[pygame.K_SPACE]:
             self.shoot(10)
         self.vel_y += GRAVITY
         dy += self.vel_y

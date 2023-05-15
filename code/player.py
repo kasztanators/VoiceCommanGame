@@ -26,6 +26,7 @@ class Player:
         self.health_pts = 100
         self.health_bar = HealthBar(health_bar_x, 50, 300, 30, self.health_pts)
         self.squat_key = None
+        self.bullet_img = None
 
     def draw_player(self, screen):
         pygame.draw.rect(screen, self.color, self.rect)
@@ -65,7 +66,7 @@ class Player:
 
     def shoot(self, bullet_speed):
         if self.cooldown <=0:
-            bullet = Bullet(self.rect.x, self.rect.y,self.bullets,bullet_speed)
+            bullet = Bullet(self.rect.x, self.rect.y,self.bullets,bullet_speed, self.bullet_img)
             self.bullets.append(bullet)
             self.cooldown+=10
 

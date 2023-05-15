@@ -34,7 +34,7 @@ class Game:
             predicted_command = ""
             command = ""
 
-            if key[pygame.K_SPACE]:
+            if key[pygame.K_SLASH]:
 
                 self.draw_ptt()
                 pygame.display.update()
