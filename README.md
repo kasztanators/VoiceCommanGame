@@ -4,7 +4,7 @@ This is a simple Pygame-based game that allows you to steer using voice commands
 
 ## Steering with voice commands
 - Push to talk
-  - P
+  - /
 - Movement
   - left
   - right
