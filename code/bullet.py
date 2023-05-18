@@ -10,9 +10,16 @@ class Bullet:
         self.bullet_img = pygame.image.load(f"./assets/images/bullet/{bullet_img}.png").convert_alpha()
         self.rect = pygame.Rect(self.x, self.y, 10, 10)
         self.bullet_list = bullet_list
+        self.is_rotating = True if bullet_img == "axe" else False
+        self.rotating_angle = 0
 
     def draw_bullet(self, screen):
-        screen.blit(self.bullet_img, self.rect)
+        if self.is_rotating:
+            self.rotating_angle -=8
+            self.rotating_angle = self.rotating_angle % 360
+
+        image = pygame.transform.rotate(self.bullet_img,self.rotating_angle)
+        screen.blit(image, self.rect)
 
     def refresh(self, screen):
         self.delete_bullet()
