@@ -27,9 +27,16 @@ class Player:
         self.health_bar = HealthBar(health_bar_x, 50, 300, 30, self.health_pts)
         self.squat_key = None
         self.bullet_img = None
+        self.player_img = None
 
     def draw_player(self, screen):
-        pygame.draw.rect(screen, self.color, self.rect)
+
+        if self.player_img is not None:
+            img_path = pygame.image.load(f"./assets/images/{self.player_img}/{self.player_img}.png").convert_alpha()
+            original_size = img_path.get_size()
+            new_size = (int(original_size[0] * 0.8), int(original_size[1] * 0.8))
+            resized_img = pygame.transform.scale(img_path, new_size)
+            screen.blit(resized_img, self.rect)
 
     def refresh(self, screen):
         self.hit_by_bullet()

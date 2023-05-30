@@ -6,6 +6,7 @@ class Wizard(Player):
         super().__init__(pos_x, pos_y, color, 100)
         self.squat_key = pygame.K_s
         self.bullet_img = "axe"
+        self.player_img = "wizard"
 
     def move(self):
         SPEED = 10

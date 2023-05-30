@@ -11,6 +11,7 @@ class Warrior(Player):
         self.move_right = False
         self.is_squatting_voice = False
         self.bullet_img = "spear"
+        self.player_img = "warrior"
 
     def move(self, command):
         SPEED = 10
