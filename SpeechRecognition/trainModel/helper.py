@@ -12,5 +12,3 @@ def get_spectrogram(waveform, label_names):
     # shape (`batch_size`, `height`, `width`, `channels`).
     spectrogram = spectrogram[..., tf.newaxis]
     return spectrogram
-
-

@@ -1,13 +1,12 @@
 import pathlib
-import matplotlib.pyplot as plt
 import numpy as np
-import seaborn as sns
 import tensorflow as tf
 from IPython import display
-from helper import get_spectrogram
 from exportModel import ExportModel
-from plotter import display_plot_commands, plot_spectrogram, plot_waveform_grid, plot_waveform_and_spectrogram, \
+from helper import get_spectrogram
+from plotter import display_plot_commands, plot_waveform_grid, plot_waveform_and_spectrogram, \
     plot_spectrogram_grid, evaluate_model
+import matplotlib.pyplot as plt
 
 DATASET_PATH = 'data/mini_speech_commands'
 data_dir = pathlib.Path(DATASET_PATH)
@@ -74,16 +73,16 @@ def get_model(input_shape, norm_layer, num_labels):
     ])
 
 
-def plot_command(command_name, file_dest, model, label_names):
+def get_prediction(command_name, file_dest, model, label_names, ax):
     x = data_dir / file_dest
     x = tf.io.read_file(str(x))
-    x, sample_rate = tf.audio.decode_wav(x, desired_channels=1, desired_samples=16000, )
+    x, sample_rate = tf.audio.decode_wav(x, desired_channels=1, desired_samples=16000)
     x = tf.squeeze(x, axis=-1)
     x = get_spectrogram(x, label_names)
     x = x[tf.newaxis, ...]
 
     prediction = model(x)
-    display_plot_commands(command_name, prediction)
+    display_plot_commands(command_name, prediction, ax)
 
 
 def analyze_audio_example(example_audio, example_labels, label_names, sample_rate):
@@ -118,6 +117,27 @@ def train_model(model, train_spectrogram_ds, val_spectrogram_ds):
         callbacks=tf.keras.callbacks.EarlyStopping(verbose=1, patience=2),
     )
     return history
+
+
+def plot_command_to_model(model, label_names):
+    commands_to_plot = {
+        'Yes': 'yes/0ab3b47d_nohash_0.wav',
+        'Up': 'up/0ab3b47d_nohash_0.wav',
+        'Stop': 'stop/0b40aa8e_nohash_0.wav',
+        'Right': 'right/0ab3b47d_nohash_0.wav',
+        'Left': 'left/0b09edd3_nohash_0.wav',
+        'Go': 'go/0a9f9af7_nohash_0.wav',
+        'Down': 'down/0a9f9af7_nohash_0.wav'
+    }
+    # Plotting goodness of fit of each command
+    fig, axs = plt.subplots(1, len(commands_to_plot), figsize=(15, 5))
+
+    # Plotting goodness of fit of each command
+    for i, (command, filepath) in enumerate(commands_to_plot.items()):
+        get_prediction(command, filepath, model, label_names, axs[i])
+
+    plt.tight_layout()
+    plt.show()
 
 
 def run():
@@ -163,8 +183,7 @@ def run():
 
     # Instantiate the `tf.keras.layers.Normalization` layer.
     norm_layer = tf.keras.layers.Normalization()
-    # Fit the state of the layer to the spectrograms
-    # with `Normalization.adapt`.
+    # Fit the state of the layer to the spectrograms with `Normalization.adapt`.
     norm_layer.adapt(data=train_spectrogram_ds.map(map_func=lambda spec, label: spec))
 
     model = get_model(input_shape, norm_layer, num_labels)
@@ -175,26 +194,11 @@ def run():
     metrics = history.history
 
     evaluate_model(model, test_spectrogram_ds, label_names, history, metrics)
-
-    commands_to_plot = {
-        'Yes': 'yes/0ab3b47d_nohash_0.wav',
-        'Up': 'up/0ab3b47d_nohash_0.wav',
-        'Stop': 'stop/0b40aa8e_nohash_0.wav',
-        'Right': 'right/0ab3b47d_nohash_0.wav',
-        'Left': 'left/0b09edd3_nohash_0.wav',
-        'Go': 'go/0a9f9af7_nohash_0.wav',
-        'Down': 'down/0a9f9af7_nohash_0.wav'
-    }
-    # Plotting goodness of fit of each command
-    for command, filepath in commands_to_plot.items():
-        plot_command(command, filepath, model, label_names)
+    plot_command_to_model(model, label_names)
 
     display.display(display.Audio(waveform, rate=16000))
     export_model = ExportModel(model, label_names)
     tf.keras.models.save_model(export_model.model, "../../code/saved_model/saved")
-
-
-#   imported = tf.keras.models.load_model("../../code/saved_model/saved")
 
 
 run()

@@ -4,11 +4,10 @@ import numpy as np
 import seaborn as sns
 
 
-def display_plot_commands(command_name, prediction):
+def display_plot_commands(command_name, prediction, ax):
     x_labels = ['down', 'go', 'left', 'right', 'stop', 'up', 'yes']
-    plt.bar(x_labels, tf.nn.softmax(prediction[0]))
-    plt.title(command_name)
-    plt.show()
+    ax.bar(x_labels, tf.nn.softmax(prediction[0]))
+    ax.set_title(command_name)
 
 
 def plot_spectrogram(spectrogram, ax):
@@ -61,8 +60,8 @@ def plot_waveform_and_spectrogram(waveform, spectrogram, label, sample_rate):
 
 
 def plot_spectrogram_grid(spectrograms, labels, label_names,  figsize=(16, 9)):
-    rows = 3
-    cols = 3
+    rows = 2
+    cols = 4
     n = rows * cols
     fig, axes = plt.subplots(rows, cols, figsize=figsize)
 
