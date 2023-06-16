@@ -24,7 +24,7 @@ Model is learning on pictures of spectograms 32px, 32px.
   - Space
 ## Game presentation
 ![Alt text](/screenShots/game2.png?raw=true "Game")
-### How command fits to model
+### How well command fits to trained model
 ![Alt text](/screenShots/command_fit.png?raw=true "commands")
-### Example of spectogram to waveform
+### Example of spectogram and waveform of voice command
 ![Alt text](/screenShots/spectogram.png?raw=true "spec")
